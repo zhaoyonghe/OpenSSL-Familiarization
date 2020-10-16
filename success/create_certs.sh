@@ -44,8 +44,8 @@ openssl req -config ${ROOT_CA_DIR}/root_ca.cnf \
     -out ${ROOT_CA_DIR}/certs/root_ca.cert.pem
 chmod 444 ${ROOT_CA_DIR}/certs/root_ca.cert.pem
 
-# new_step "Check the self-signed certificate"
-# openssl x509 -noout -text -in ${ROOT_CA_DIR}/certs/root_ca.cert.pem
+new_step "Check the self-signed certificate"
+openssl x509 -noout -text -in ${ROOT_CA_DIR}/certs/root_ca.cert.pem
 
 ###################################################################################
 # create the immediate ca
@@ -80,11 +80,11 @@ openssl ca -config ${ROOT_CA_DIR}/root_ca.cnf -extensions v3_intermediate_ca \
     -out ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem
 chmod 444 ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem
 
-# cat ${INTERMEDIATE_CA_DIR}/index.txt
-# new_step "Verify the intermediate certificate"
-# openssl x509 -noout -text -in ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem
-# openssl verify -CAfile ${ROOT_CA_DIR}/certs/root_ca.cert.pem \
-#    ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem
+cat ${INTERMEDIATE_CA_DIR}/index.txt
+new_step "Verify the intermediate certificate"
+openssl x509 -noout -text -in ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem
+openssl verify -CAfile ${ROOT_CA_DIR}/certs/root_ca.cert.pem \
+    ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem
 
 cat ${INTERMEDIATE_CA_DIR}/certs/intermediate_ca.cert.pem \
     ${ROOT_CA_DIR}/certs/root_ca.cert.pem > ${INTERMEDIATE_CA_DIR}/certs/ca-chain.cert.pem
@@ -101,6 +101,10 @@ openssl req -config ${INTERMEDIATE_CA_DIR}/www.test.com.cnf \
     -new -sha256 -passin pass:yyyy \
     -key ${INTERMEDIATE_CA_DIR}/private/www.test.com.key.pem \
     -out ${INTERMEDIATE_CA_DIR}/csr/www.test.com.csr.pem
+
+new_step "temp: Check the server CSR"
+openssl req -text -noout -in ${INTERMEDIATE_CA_DIR}/csr/www.test.com.csr.pem
+
 new_step "The intermediate ca gives the server a signed certificate based on its CSR"
 openssl ca -config ${INTERMEDIATE_CA_DIR}/intermediate_ca.cnf -extensions server_cert \
     -days 375 -notext -md sha256 -passin pass:yyyy \
@@ -108,10 +112,10 @@ openssl ca -config ${INTERMEDIATE_CA_DIR}/intermediate_ca.cnf -extensions server
     -out ${INTERMEDIATE_CA_DIR}/certs/www.test.com.cert.pem
 chmod 444 ${INTERMEDIATE_CA_DIR}/certs/www.test.com.cert.pem
 
-# new_step "Verify the server certificate"
-# openssl x509 -noout -text -in ${INTERMEDIATE_CA_DIR}/certs/www.test.com.cert.pem
-# openssl verify -CAfile ${INTERMEDIATE_CA_DIR}/certs/ca-chain.cert.pem \
-#    ${INTERMEDIATE_CA_DIR}/certs/www.test.com.cert.pem
+new_step "Verify the server certificate"
+openssl x509 -noout -text -in ${INTERMEDIATE_CA_DIR}/certs/www.test.com.cert.pem
+openssl verify -CAfile ${INTERMEDIATE_CA_DIR}/certs/ca-chain.cert.pem \
+    ${INTERMEDIATE_CA_DIR}/certs/www.test.com.cert.pem
 
 ###################################################################################
 # client certificate
