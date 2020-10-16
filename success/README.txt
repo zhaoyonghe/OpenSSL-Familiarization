@@ -1,0 +1,1 @@
+Scripts in this folder simulate a success scenario when the server and client are both trustable and can be verified with each other. In this scenario, the client can get the a.txt successfully.
