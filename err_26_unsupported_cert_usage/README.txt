@@ -1,0 +1,1 @@
+Scripts in this folder simulate an error scenario when the client public key is not allowed to be used in data signature and key encipherment, raising error 26: unsupported certificate purpose. In this scenario, the limited usages of the client public key cannot support the whole TLS handshake procedure.
